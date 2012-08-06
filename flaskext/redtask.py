@@ -11,8 +11,8 @@ app = Blueprint('task', __name__)
 def task_run():
     signer = Signer(current_app.secret_key)
 
-    data = json.loads(request.form['_'])
-    data = signer.unsign(data)
+    _data = request.form['_']
+    data = json.loads(signer.unsign(_data))
 
     callname = data.get('call')
     a, kw = data['args'], data['kwargs']
