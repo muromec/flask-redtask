@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Flask-Redtask',
-    version='0.2.1',
+    version='0.3',
     url='http://github.com/muromec/flask-redtask',
     license='BSD',
     author='Ilya Petrov',

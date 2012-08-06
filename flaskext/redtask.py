@@ -60,3 +60,9 @@ def defer(f):
     defered.defer = defered
 
     return defered
+
+def push(push_id, data):
+    mc.set('task:ws', json.dumps({
+        "_id": push_id,
+        "payload": data,
+    }))
