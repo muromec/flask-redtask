@@ -2,18 +2,18 @@ import json
 from functools import wraps
 
 import memcache
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
+from itsdangerous import Signer
 
 app = Blueprint('task', __name__)
 
-WHITE = ['127.0.0.1']
-
 @app.route('/_ah/task', methods=['POST'])
 def task_run():
-    if request.remote_addr not in WHITE:
-        return 'no'
+    signer = Signer(current_app.secret_key)
 
     data = json.loads(request.form['_'])
+    data = signer.unsign(data)
+
     callname = data.get('call')
     a, kw = data['args'], data['kwargs']
 
@@ -31,17 +31,23 @@ def get_mc():
 mc = get_mc()
 
 def _defer(f, *a, **kw):
+
+    signer = Signer(current_app.secret_key)
+
     env = [
     ]
+
+    data = json.dumps({
+        "args": a,
+        "kwargs": kw,
+        "env": env,
+        "call": "%s.%s" % (f.__module__,f.__name__),
+    })
+
     task = {
         "url": request.url_root+'_ah/task',
             "method": "POST",
-            "body": { "_": json.dumps({
-                "args": a,
-                "kwargs": kw,
-                "env": env,
-                "call": "%s.%s" % (f.__module__,f.__name__),
-            }),},
+            "body": { "_": signer.sign(data) },
     }
     mc.set('task:url', json.dumps(task))
 
