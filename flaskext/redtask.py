@@ -25,7 +25,7 @@ def task_run():
     return 'ok'
 
 def get_mc():
-    mc = memcache.Client(['127.0.0.1:11211'])
+    mc = memcache.Client(['127.0.0.1:33211'])
     return mc
 
 mc = get_mc()
